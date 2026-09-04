@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mark } from "@/components/mark";
+import { buildLocalizedPath, type Locale } from "@/lib/i18n";
 
 const columns = [
   {
@@ -25,7 +26,7 @@ const columns = [
   },
 ];
 
-export function Footer() {
+export function Footer({ locale }: { locale: Locale }) {
   return (
     <footer className="border-t border-graphite-line">
       <div className="mx-auto max-w-5xl px-6 py-14">
@@ -51,7 +52,7 @@ export function Footer() {
                 {col.links.map((link) => (
                   <li key={link.href}>
                     <Link
-                      href={link.href}
+                      href={buildLocalizedPath(link.href, locale)}
                       className="text-sm text-titanium hover:text-teal transition-colors"
                     >
                       {link.label}

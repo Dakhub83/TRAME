@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useBooking } from "@/context/booking-context";
 import { formatFcfa } from "@/lib/trips";
+import { buildLocalizedPath } from "@/lib/i18n";
+import { useLocale } from "@/hooks/use-locale";
 import type { PaymentMethod } from "@/lib/types";
 
 const PAYMENT_LABELS: Record<PaymentMethod, { name: string; color: string }> = {
@@ -12,13 +14,14 @@ const PAYMENT_LABELS: Record<PaymentMethod, { name: string; color: string }> = {
 
 export function TicketWallet() {
   const { booking, setPaymentMethod } = useBooking();
+  const locale = useLocale();
 
   if (!booking) {
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-4 px-5 py-16 text-center">
         <p className="text-titanium-dim">Aucun billet actif pour le moment.</p>
         <Link
-          href="/book"
+          href={buildLocalizedPath("/book", locale)}
           className="rounded-xl bg-teal px-6 py-3.5 font-semibold text-obsidian"
         >
           Réserver un siège

@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Seat, Trip } from "@/lib/types";
 import { formatFcfa } from "@/lib/trips";
+import { buildLocalizedPath } from "@/lib/i18n";
 import { useBooking } from "@/context/booking-context";
+import { useLocale } from "@/hooks/use-locale";
 
 function seatClasses(seat: Seat, isSelected: boolean) {
   const base =
@@ -24,6 +26,7 @@ function seatClasses(seat: Seat, isSelected: boolean) {
 
 export function SeatMap({ trip }: { trip: Trip }) {
   const router = useRouter();
+  const locale = useLocale();
   const { confirmBooking } = useBooking();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -54,7 +57,7 @@ export function SeatMap({ trip }: { trip: Trip }) {
     if (!selectedSeat) return;
     setSubmitting(true);
     confirmBooking(trip, selectedSeat);
-    router.push("/ticket");
+    router.push(buildLocalizedPath("/ticket", locale));
   }
 
   return (

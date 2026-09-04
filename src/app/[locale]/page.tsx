@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTrip, formatFcfa } from "@/lib/trips";
+import { buildLocalizedPath, toLocale } from "@/lib/i18n";
 
 const network = [
   { label: "RÉSEAU ACTIF", value: "14 LIAISONS" },
@@ -40,7 +41,8 @@ const steps = [
   },
 ];
 
-export default function Home() {
+export default async function Home({ params }: PageProps<"/[locale]">) {
+  const locale = toLocale((await params).locale);
   const trip = getTrip("ouaga-bobo-0630")!;
 
   return (
@@ -57,13 +59,13 @@ export default function Home() {
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            href="/book"
+            href={buildLocalizedPath("/book", locale)}
             className="rounded-xl bg-teal px-6 py-3.5 font-semibold text-obsidian"
           >
             Choisir un siège
           </Link>
           <Link
-            href="/fret"
+            href={buildLocalizedPath("/fret", locale)}
             className="rounded-xl border border-graphite-line px-6 py-3.5 font-semibold text-titanium hover:border-titanium-dim transition-colors"
           >
             Envoyer un colis
@@ -94,7 +96,7 @@ export default function Home() {
                 {v.description}
               </p>
               <Link
-                href={v.cta.href}
+                href={buildLocalizedPath(v.cta.href, locale)}
                 className="mt-5 inline-block font-data text-xs text-teal hover:opacity-80"
               >
                 {v.cta.label} →
@@ -146,7 +148,7 @@ export default function Home() {
               </div>
             </div>
             <Link
-              href="/book"
+              href={buildLocalizedPath("/book", locale)}
               className="rounded-xl bg-teal px-6 py-3.5 font-semibold text-obsidian"
             >
               Choisir un siège

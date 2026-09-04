@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { freightTiers } from "@/lib/freight";
+import { buildLocalizedPath, toLocale } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "Fret express — TRAME",
@@ -15,7 +16,9 @@ const lifecycle = [
   "Livraison au destinataire",
 ];
 
-export default function FretPage() {
+export default async function FretPage({ params }: PageProps<"/[locale]/fret">) {
+  const locale = toLocale((await params).locale);
+
   return (
     <div>
       <section className="mx-auto max-w-3xl px-6 pb-14 pt-16">
@@ -31,13 +34,13 @@ export default function FretPage() {
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            href="/track"
+            href={buildLocalizedPath("/track", locale)}
             className="rounded-xl bg-teal px-6 py-3.5 font-semibold text-obsidian"
           >
             Suivre un colis
           </Link>
           <Link
-            href="/contact"
+            href={buildLocalizedPath("/contact", locale)}
             className="rounded-xl border border-graphite-line px-6 py-3.5 font-semibold text-titanium hover:border-titanium-dim transition-colors"
           >
             Envoyer un colis — nous contacter
