@@ -4,36 +4,22 @@
  * that needs to reason about locales without re-implementing this logic.
  */
 
-export const locales = ["en", "fr", "mos", "dyu", "fuv"] as const;
+export const locales = ["en", "fr"] as const;
 
 export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
 
 /**
- * The locale routing falls back to when the negotiated preference isn't
- * English — i.e. any French or West African signal collapses to French,
- * per the business rule that French is the safe default for this market
- * until mos/dyu/fuv have full translation coverage.
+ * The locale routing falls back to when the negotiated preference is
+ * French rather than English.
  */
 export const negotiatedFallbackLocale: Locale = "fr";
 
 export const localeLabels: Record<Locale, string> = {
   en: "English",
   fr: "Français",
-  mos: "Mooré",
-  dyu: "Dioula",
-  fuv: "Fulfulde",
 };
-
-/**
- * Primary language subtags that should negotiate to French. Includes
- * French itself plus the three West African locales this system targets —
- * none of them currently have a dedicated translation bundle, so requests
- * preferring them are routed to the French experience rather than a
- * locale with no content.
- */
-const FRENCH_ALIGNED_SUBTAGS = new Set<string>(["fr", "mos", "dyu", "fuv", "ff"]);
 
 const localeSet = new Set<string>(locales);
 
@@ -105,9 +91,9 @@ function parseAcceptLanguage(header: string | null): string[] {
  * - A cookie-persisted preference (from a prior manual selection) wins
  *   outright, if present and valid.
  * - Otherwise, walk the Accept-Language subtags in quality order; the
- *   first one that is French or a West African locale resolves to "fr",
- *   the first one that is English resolves to "en".
- * - If nothing in the header matches either group, fall back to "en".
+ *   first one that is French resolves to "fr", the first one that is
+ *   English resolves to "en".
+ * - If nothing in the header matches either, fall back to "en".
  */
 export function negotiateLocale(acceptLanguageHeader: string | null, cookieLocale?: string | null): Locale {
   if (cookieLocale && isSupportedLocale(cookieLocale)) {
@@ -117,7 +103,7 @@ export function negotiateLocale(acceptLanguageHeader: string | null, cookieLocal
   const subtags = parseAcceptLanguage(acceptLanguageHeader);
 
   for (const subtag of subtags) {
-    if (FRENCH_ALIGNED_SUBTAGS.has(subtag)) return negotiatedFallbackLocale;
+    if (subtag === "fr") return negotiatedFallbackLocale;
     if (subtag === "en") return defaultLocale;
   }
 
