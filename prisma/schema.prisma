@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Contact form submissions
+// ---------------------------------------------------------------------------
+
+enum ContactStatus {
+  NEW
+  IN_REVIEW
+  RESOLVED
+}
+
+model ContactSubmission {
+  id        String        @id @default(cuid())
+  fullName  String        @map("full_name")
+  email     String
+  // Local Burkina Faso (XOF) phone format, e.g. "+226 70 12 34 56" or
+  // "70123456". Stored as free-form text; format is validated at the API
+  // boundary (Zod), not enforced by a DB constraint.
+  phone     String
+  message   String        @db.Text
+  status    ContactStatus @default(NEW)
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("contact_submissions")
+}
+
+// ---------------------------------------------------------------------------
+// Reservations
+// ---------------------------------------------------------------------------
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+// Mirrors the app's supported UI locales (src/lib/i18n.ts: en, fr).
+enum Locale {
+  en
+  fr
+}
+
+model Reservation {
+  id               String        @id @default(cuid())
+  passengerName    String        @map("passenger_name")
+  phone            String
+  // e.g. "1A", "14B" — matches the seat-map's seat id format.
+  seatNumber       String        @map("seat_number")
+  // Date-only precision: the calendar day of travel, not a timestamp.
+  travelDate       DateTime      @map("travel_date") @db.Date
+  corridorId       String        @map("corridor_id")
+  corridor         Corridor      @relation(fields: [corridorId], references: [id], onDelete: Restrict)
+  paymentStatus    PaymentStatus @default(PENDING) @map("payment_status")
+  selectedLanguage Locale        @default(fr) @map("selected_language")
+  createdAt        DateTime      @default(now()) @map("created_at")
+
+  // Prevents two reservations from double-booking the same physical seat
+  // on the same corridor and travel date.
+  @@unique([corridorId, travelDate, seatNumber])
+  @@index([travelDate])
+  @@index([paymentStatus])
+  @@map("reservations")
+}
+
+// ---------------------------------------------------------------------------
+// Corridors (routes)
+// ---------------------------------------------------------------------------
+
+model Corridor {
+  id                  String        @id @default(cuid())
+  // e.g. "Ouagadougou - Bobo-Dioulasso"
+  name                String        @unique
+  basePriceCFA        Int           @map("base_price_cfa")
+  travelDurationHours Float         @map("travel_duration_hours")
+  isActive            Boolean       @default(true) @map("is_active")
+  reservations        Reservation[]
+
+  @@index([isActive])
+  @@map("corridors")
+}
