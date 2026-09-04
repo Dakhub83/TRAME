@@ -9,6 +9,7 @@ const columns = [
       { href: "/book", label: "Réserver un siège" },
       { href: "/ticket", label: "Mon billet" },
       { href: "/corridors", label: "Corridors" },
+      { href: "/fleet", label: "Notre flotte" },
     ],
   },
   {

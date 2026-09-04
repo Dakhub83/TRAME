@@ -13,6 +13,7 @@ const navItems = [
   { href: "/book", label: "RÉSERVER" },
   { href: "/pricing", label: "TARIFS" },
   { href: "/corridors", label: "CORRIDORS" },
+  { href: "/fleet", label: "FLOTTE" },
   { href: "/a-propos", label: "À PROPOS" },
   { href: "/contact", label: "CONTACT" },
 ];
