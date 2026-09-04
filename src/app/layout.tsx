@@ -4,6 +4,7 @@ import Link from "next/link";
 import "./globals.css";
 import { BookingProvider } from "@/context/booking-context";
 import { Mark } from "@/components/mark";
+import { Footer } from "@/components/footer";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -49,13 +50,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 <Link href="/book" className="hover:text-teal transition-colors">
                   RÉSERVER
                 </Link>
-                <Link href="/track" className="hover:text-teal transition-colors">
-                  SUIVI FRET
+                <Link href="/fret" className="hover:text-teal transition-colors">
+                  FRET
+                </Link>
+                <Link href="/a-propos" className="hover:text-teal transition-colors">
+                  À PROPOS
+                </Link>
+                <Link href="/contact" className="hover:text-teal transition-colors">
+                  CONTACT
                 </Link>
               </nav>
             </div>
           </header>
           <main className="flex-1">{children}</main>
+          <Footer />
         </BookingProvider>
       </body>
     </html>

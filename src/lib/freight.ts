@@ -15,6 +15,18 @@ export type Waybill = {
   steps: TrackStep[];
 };
 
+export type FreightTier = {
+  name: string;
+  weightRange: string;
+  indicativePrice: string;
+};
+
+export const freightTiers: FreightTier[] = [
+  { name: "Léger", weightRange: "Jusqu'à 2 kg", indicativePrice: "À partir de 2 000 F" },
+  { name: "Standard", weightRange: "2 à 10 kg", indicativePrice: "À partir de 5 000 F" },
+  { name: "Volumineux", weightRange: "10 kg et plus", indicativePrice: "Sur devis" },
+];
+
 export const waybill: Waybill = {
   id: "WB-8827-OGB",
   route: "Ouaga → Bobo",
