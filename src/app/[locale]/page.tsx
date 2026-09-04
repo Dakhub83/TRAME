@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTrip, formatFcfa } from "@/lib/trips";
 import { buildLocalizedPath, toLocale } from "@/lib/i18n";
+import { HeroCoach } from "@/components/hero-coach";
 
 const network = [
   { label: "RÉSEAU ACTIF", value: "14 LIAISONS" },
@@ -8,18 +9,26 @@ const network = [
   { label: "FLOTTE", value: "VOLVO / MARCOPOLO" },
 ];
 
-const verticals = [
+const quickActions = [
   {
-    title: "Transport interurbain",
-    description:
-      "Coachs premium Volvo & Marcopolo, check-in 100% numérique, plan de sièges dynamique et billet mobile.",
-    cta: { href: "/book", label: "Choisir un siège" },
+    title: "Réserver",
+    description: "Choisissez votre siège sur un trajet interurbain.",
+    href: "/book",
   },
   {
-    title: "Fret express",
-    description:
-      "Vos colis voyagent sur les mêmes liaisons que nos passagers, avec lettre de voiture et suivi en temps réel.",
-    cta: { href: "/fret", label: "Envoyer un colis" },
+    title: "Services",
+    description: "Passagers, colis express, affrètement VIP.",
+    href: "/services",
+  },
+  {
+    title: "Corridors",
+    description: "Le réseau de liaisons actives et transfrontalières.",
+    href: "/corridors",
+  },
+  {
+    title: "Tarifs",
+    description: "Grille de prix sièges et colis, en F CFA.",
+    href: "/pricing",
   },
 ];
 
@@ -47,61 +56,71 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
 
   return (
     <div>
-      <section className="mx-auto max-w-5xl px-6 pb-16 pt-20">
-        <p className="font-data text-xs text-teal">RÉSEAU ACTIF · 14 LIAISONS</p>
-        <h1 className="mt-3 max-w-2xl font-display text-4xl font-semibold leading-tight sm:text-5xl">
-          Le réseau, réinventé — voyageurs &amp; colis, une seule
-          infrastructure.
-        </h1>
-        <p className="mt-5 max-w-xl text-titanium-dim">
-          Réservation de siège 100% numérique, billet mobile et suivi de fret
-          en temps réel, sur la même colonne vertébrale de transport.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            href={buildLocalizedPath("/book", locale)}
-            className="rounded-xl bg-teal px-6 py-3.5 font-semibold text-obsidian"
-          >
-            Choisir un siège
-          </Link>
-          <Link
-            href={buildLocalizedPath("/fret", locale)}
-            className="rounded-xl border border-graphite-line px-6 py-3.5 font-semibold text-titanium hover:border-titanium-dim transition-colors"
-          >
-            Envoyer un colis
-          </Link>
+      <section className="relative overflow-hidden border-b border-graphite-line">
+        <div className="absolute inset-0" aria-hidden="true">
+          <HeroCoach className="absolute inset-x-0 bottom-0 h-[420px] w-full opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/85 to-obsidian/25" />
+          <div className="absolute inset-0 bg-gradient-to-b from-obsidian/50 via-transparent to-obsidian" />
         </div>
 
-        <dl className="mt-14 grid grid-cols-1 gap-6 border-t border-graphite-line pt-8 sm:grid-cols-3">
-          {network.map((item) => (
-            <div key={item.label}>
-              <dt className="font-data text-[11px] text-titanium-dim">
-                {item.label}
-              </dt>
-              <dd className="mt-1 font-data text-sm text-teal">{item.value}</dd>
-            </div>
-          ))}
-        </dl>
+        <div className="relative mx-auto max-w-5xl px-6 pb-16 pt-24 sm:pt-32">
+          <p className="font-data text-xs text-teal">RÉSEAU ACTIF · 14 LIAISONS</p>
+          <h1 className="mt-4 font-display text-6xl font-bold tracking-tight text-white sm:text-7xl">
+            TRAME
+          </h1>
+          <p className="mt-2 font-display text-lg text-titanium-dim">
+            Logistique &amp; Transport Interurbain
+          </p>
+          <p className="mt-6 max-w-xl text-titanium-dim">
+            Réservation de siège 100% numérique, billet mobile et suivi de fret
+            en temps réel, sur la même colonne vertébrale de transport.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href={buildLocalizedPath("/book", locale)}
+              className="rounded-xl bg-teal px-6 py-3.5 font-semibold text-obsidian shadow-[0_0_24px_-6px_var(--color-teal)] transition-shadow hover:shadow-[0_0_32px_-4px_var(--color-teal)]"
+            >
+              Choisir un siège
+            </Link>
+            <Link
+              href={buildLocalizedPath("/services", locale)}
+              className="rounded-xl border border-graphite-line px-6 py-3.5 font-semibold text-titanium hover:border-titanium-dim transition-colors"
+            >
+              Découvrir nos services
+            </Link>
+          </div>
+
+          <dl className="mt-14 grid grid-cols-1 gap-6 border-t border-graphite-line pt-8 sm:grid-cols-3">
+            {network.map((item) => (
+              <div key={item.label}>
+                <dt className="font-data text-[11px] text-titanium-dim">
+                  {item.label}
+                </dt>
+                <dd className="mt-1 font-data text-sm text-teal">{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </section>
 
       <section className="border-t border-graphite-line bg-graphite/40">
-        <div className="mx-auto grid max-w-5xl gap-6 px-6 py-16 sm:grid-cols-2">
-          {verticals.map((v) => (
-            <div
-              key={v.title}
-              className="rounded-2xl border border-graphite-line bg-graphite p-7"
+        <div className="mx-auto grid max-w-5xl gap-5 px-6 py-16 sm:grid-cols-2 lg:grid-cols-4">
+          {quickActions.map((action) => (
+            <Link
+              key={action.href}
+              href={buildLocalizedPath(action.href, locale)}
+              className="rounded-2xl border border-graphite-line bg-graphite p-6 transition-colors hover:border-teal"
             >
-              <h2 className="font-display text-xl font-semibold">{v.title}</h2>
-              <p className="mt-3 text-sm leading-relaxed text-titanium-dim">
-                {v.description}
+              <h2 className="font-display text-base font-semibold">
+                {action.title}
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-titanium-dim">
+                {action.description}
               </p>
-              <Link
-                href={buildLocalizedPath(v.cta.href, locale)}
-                className="mt-5 inline-block font-data text-xs text-teal hover:opacity-80"
-              >
-                {v.cta.label} →
-              </Link>
-            </div>
+              <span className="mt-4 inline-block font-data text-xs text-teal">
+                →
+              </span>
+            </Link>
           ))}
         </div>
       </section>
@@ -125,7 +144,20 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-6 pb-20">
+      <section className="border-t border-graphite-line bg-graphite/40">
+        <div className="mx-auto max-w-3xl px-6 py-16 text-center">
+          <p className="font-display text-xl leading-relaxed text-titanium sm:text-2xl">
+            &laquo; Le Burkina Faso mérite un réseau de transport aussi
+            sérieux que ses voyageurs. TRAME est la grille logicielle que
+            nous aurions voulu trouver au guichet. &raquo;
+          </p>
+          <p className="mt-5 font-data text-xs text-titanium-dim">
+            FONDATEUR, TRAME
+          </p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-6 py-20">
         <div className="rounded-2xl border border-graphite-line bg-graphite p-6">
           <div className="flex items-center justify-between">
             <span className="font-display text-xl font-semibold">

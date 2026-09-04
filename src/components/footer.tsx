@@ -8,6 +8,7 @@ const columns = [
     links: [
       { href: "/book", label: "Réserver un siège" },
       { href: "/ticket", label: "Mon billet" },
+      { href: "/corridors", label: "Corridors" },
     ],
   },
   {
@@ -20,6 +21,8 @@ const columns = [
   {
     title: "ENTREPRISE",
     links: [
+      { href: "/services", label: "Services" },
+      { href: "/pricing", label: "Tarifs" },
       { href: "/a-propos", label: "À propos" },
       { href: "/contact", label: "Contact" },
     ],
