@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Mark } from "@/components/mark";
 import { buildLocalizedPath, type Locale } from "@/lib/i18n";
+import { StoreBadges } from "@/components/store-badges";
 
 const columns = [
   {
@@ -46,6 +47,7 @@ export function Footer({ locale }: { locale: Locale }) {
               Le réseau, réinventé — voyageurs &amp; colis, une seule
               infrastructure.
             </p>
+            <StoreBadges className="mt-5" size="compact" />
           </div>
           {columns.map((col) => (
             <div key={col.title}>

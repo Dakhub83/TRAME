@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getTrip, formatFcfa } from "@/lib/trips";
 import { buildLocalizedPath, toLocale } from "@/lib/i18n";
 import { HeroCoach } from "@/components/hero-coach";
+import { StoreBadges } from "@/components/store-badges";
 
 const network = [
   { label: "RÉSEAU ACTIF", value: "14 LIAISONS" },
@@ -88,6 +89,13 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
             >
               Découvrir nos services
             </Link>
+          </div>
+
+          <div className="mt-10">
+            <p className="font-data text-[11px] uppercase tracking-widest text-titanium-dim">
+              L&apos;app TRAME arrive bientôt
+            </p>
+            <StoreBadges className="mt-3" />
           </div>
 
           <dl className="mt-14 grid grid-cols-1 gap-6 border-t border-graphite-line pt-8 sm:grid-cols-3">
