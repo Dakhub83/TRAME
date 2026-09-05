@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { HubImage } from "@/components/hub-image";
 
 export const metadata: Metadata = {
   title: "À propos — TRAME",
@@ -52,6 +53,11 @@ export default function AboutPage() {
         seule et même infrastructure. Nos coachs premium Volvo et Marcopolo
         relient les grandes villes du Burkina Faso, et chaque trajet double
         aussi comme colonne vertébrale pour l&rsquo;acheminement de colis.
+      </p>
+
+      <HubImage />
+      <p className="mt-3 font-data text-xs text-titanium-dim">
+        Hub TRAME — quais de départ, Ouagadougou.
       </p>
 
       <h2 className="mt-14 font-display text-xl font-semibold">
