@@ -10,6 +10,8 @@
   --color-teal: #00e6c3;
   --color-teal-dim: #0b3b34;
   --color-amber: #f2a93b;
+  --color-silver: #b7bcc2;
+  --color-white: #ffffff;
 
   --font-display: var(--font-space-grotesk);
   --font-body: var(--font-ibm-plex-sans);
