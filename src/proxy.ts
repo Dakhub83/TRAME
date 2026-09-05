@@ -82,12 +82,12 @@ export const config = {
      * Run on every route except:
      * - /api/*                 (API route scope)
      * - /_next/static/*        (build output)
-     * - /_next/image/*         (image optimization endpoint)
+     * - /_next/image           (image optimization endpoint)
      * - /_next/data/*          (client-side navigation data)
      * - favicon.ico, robots.txt, sitemap.xml (well-known metadata files)
      * - any path containing a dot (public/ static assets: images, fonts,
      *   stylesheets, scripts, and any other file served by extension)
      */
-    "/((?!api/|_next/static/|_next/image/|_next/data/|favicon\\.ico|robots\\.txt|sitemap\\.xml|.*\\..*).*)",
+    "/((?!api/|_next/static/|_next/image(?:/|$)|_next/data/|favicon\\.ico|robots\\.txt|sitemap\\.xml|.*\\..*).*)",
   ],
 };
