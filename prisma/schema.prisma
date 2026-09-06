@@ -91,3 +91,190 @@ model Corridor {
   @@index([isActive])
   @@map("corridors")
 }
+
+// ---------------------------------------------------------------------------
+// Account auth (email + password)
+//
+// A second, independent identity track alongside the phone/email one-time-
+// code sessions in src/lib/client-auth.ts (in-memory, no DB row at all).
+// The two aren't unified: an OTP session is just a cookie holding a phone
+// or email string, while a User row here is a real account with a
+// password. Both set the same session cookie (CLIENT_SESSION_COOKIE), so
+// the rest of the app treats a logged-in visitor uniformly regardless of
+// which path they used — but only a real User row has loyalty points,
+// a role, or a created_at. Reconciling OTP identities into real User rows
+// (and linking User to Passenger, from the manifest schema above, for real
+// booking history) is a further follow-up, not done here.
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  CLIENT
+  DISPATCHER
+  ADMIN
+}
+
+enum LoyaltyTier {
+  STANDARD
+  PRIVILEGE
+  ELITE
+}
+
+model User {
+  id             String          @id @default(cuid()) @map("user_id")
+  email          String          @unique
+  passwordHash   String          @map("password_hash")
+  fullName       String          @map("full_name")
+  phoneNumber    String?         @map("phone_number")
+  role           UserRole        @default(CLIENT) @map("user_role")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  loyaltyAccount LoyaltyAccount?
+
+  @@index([role])
+  @@map("users")
+}
+
+model LoyaltyAccount {
+  id                String      @id @default(cuid()) @map("loyalty_id")
+  userId            String      @unique @map("user_id")
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Points track kilometers traveled — e.g. one Ouagadougou-Bobo-Dioulasso
+  // one-way trip (~360km) earns roughly 360 points.
+  accumulatedPoints Int         @default(0) @map("accumulated_points")
+  tierStatus        LoyaltyTier @default(STANDARD) @map("tier_status")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+
+  @@map("loyalty_accounts")
+}
+
+// ---------------------------------------------------------------------------
+// Passenger manifest (dispatch/gate operations)
+//
+// Distinct from Reservation/Corridor above, which model the public booking
+// checkout flow. This side models a specific scheduled vehicle departure
+// (Trip) and the gate-facing manifest of who's actually on it — ticket
+// codes, seat assignments, luggage, boarding status. The two aren't linked
+// yet (Reservation has no tripId); reconciling them into one booking model
+// is a real follow-up, not done here since Reservation is already wired to
+// the live /book flow.
+// ---------------------------------------------------------------------------
+
+enum TripStatus {
+  SCHEDULED
+  BOARDING
+  DEPARTED
+  ARRIVED
+  CANCELLED
+}
+
+enum BoardingStatus {
+  RESERVED
+  CHECKED_IN
+  BOARDED
+  NO_SHOW
+}
+
+model Trip {
+  id                 String               @id @default(cuid()) @map("trip_id")
+  // e.g. "OUAGA-BOBO-01" — matches src/lib/dispatch.ts's routeCode values.
+  routeCode          String               @map("route_code")
+  // e.g. "yutong-t12" — the fleet vehicle running this specific departure.
+  vehicleId          String               @map("vehicle_id")
+  departureTimestamp DateTime             @map("departure_timestamp")
+  // e.g. "Quai 3" — the physical gate passengers board from. Nullable: not
+  // assigned until close to departure.
+  departureGate      String?              @map("departure_gate")
+  status             TripStatus           @default(SCHEDULED) @map("trip_status")
+  bookings           ManifestBooking[]
+  operatingCosts     RouteOperatingCost[]
+  createdAt          DateTime             @default(now()) @map("created_at")
+
+  @@index([departureTimestamp])
+  @@index([routeCode])
+  @@index([departureGate])
+  @@map("trips")
+}
+
+model Passenger {
+  id                  String            @id @default(cuid()) @map("passenger_id")
+  fullName            String            @map("full_name")
+  phoneNumber         String            @map("phone_number")
+  // e.g. a national ID or passport number. Free-form and optional — not
+  // every corridor requires one; validated at the API boundary, not here,
+  // same convention as ContactSubmission.phone above.
+  identityDocumentRef String?           @map("identity_document_ref")
+  bookings            ManifestBooking[]
+  createdAt           DateTime          @default(now()) @map("created_at")
+
+  @@index([phoneNumber])
+  @@map("passengers")
+}
+
+model ManifestBooking {
+  id                 String                 @id @default(cuid()) @map("booking_id")
+  tripId             String                 @map("trip_id")
+  trip               Trip                   @relation(fields: [tripId], references: [id], onDelete: Restrict)
+  passengerId        String                 @map("passenger_id")
+  passenger          Passenger              @relation(fields: [passengerId], references: [id], onDelete: Restrict)
+  // e.g. "TR-4471" — shown to the passenger and looked up on the public
+  // tracker page (src/lib/tracking.ts).
+  ticketCode         String                 @unique @map("ticket_code")
+  // Capped at the vehicle's real seat count (see src/lib/fleet.ts) — that
+  // cap is enforced at the API boundary (Zod), not as a DB constraint, same
+  // convention as the free-form phone fields above.
+  assignedSeatNumber Int                    @map("assigned_seat_number")
+  luggageWeightKg    Float                  @default(0) @map("luggage_weight_kg")
+  boardingStatus     BoardingStatus         @default(RESERVED) @map("boarding_status")
+  createdAt          DateTime               @default(now()) @map("created_at")
+  transactions       FinancialTransaction[]
+
+  // One seat, one passenger, per trip.
+  @@unique([tripId, assignedSeatNumber])
+  @@index([tripId])
+  @@index([passengerId])
+  @@index([boardingStatus])
+  @@map("manifest_bookings")
+}
+
+// ---------------------------------------------------------------------------
+// Finance (revenue + operating costs)
+//
+// amounts are plain Int FCFA, same convention as Corridor.basePriceCFA above
+// — the franc CFA has no subunit in everyday use, so there's no need for
+// Decimal here.
+// ---------------------------------------------------------------------------
+
+enum PaymentMethod {
+  ORANGE_MONEY
+  MOOV_MONEY
+  CASH
+  CARD
+}
+
+model FinancialTransaction {
+  id                String          @id @default(cuid()) @map("transaction_id")
+  bookingId         String          @map("booking_id")
+  booking           ManifestBooking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  amountFcfa        Int             @map("amount_fcfa")
+  paymentMethod     PaymentMethod   @map("payment_method")
+  processingFeeFcfa Int             @default(0) @map("processing_fee_fcfa")
+  settledAt         DateTime?       @map("settled_at")
+  createdAt         DateTime        @default(now()) @map("created_at")
+
+  @@index([bookingId])
+  @@index([paymentMethod])
+  @@index([settledAt])
+  @@map("financial_transactions")
+}
+
+model RouteOperatingCost {
+  id               String   @id @default(cuid()) @map("cost_id")
+  tripId           String   @map("trip_id")
+  trip             Trip     @relation(fields: [tripId], references: [id], onDelete: Restrict)
+  fuelExpenseFcfa  Int      @map("fuel_expense_fcfa")
+  tollFeesFcfa     Int      @default(0) @map("toll_fees_fcfa")
+  driverPayoutFcfa Int      @map("driver_payout_fcfa")
+  loggedTimestamp  DateTime @default(now()) @map("logged_timestamp")
+
+  @@index([tripId])
+  @@map("route_operating_costs")
+}
