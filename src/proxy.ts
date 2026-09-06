@@ -6,6 +6,7 @@ import {
   negotiateLocale,
   type Locale,
 } from "@/lib/i18n";
+import { ADMIN_SESSION_COOKIE, ADMIN_LOGIN_PATH, isAdminAuthorized } from "@/lib/admin-auth";
 
 /**
  * Cookie that persists a user's locale once it has been negotiated or
@@ -23,6 +24,14 @@ const LOCALE_HEADER = "x-app-locale";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // /admin lives outside the [locale] tree entirely (isolated route group,
+  // its own root layout) — gate it here instead of running it through
+  // locale negotiation below.
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    return guardAdminRoute(request, pathname);
+  }
+
   const pathLocale = getLocaleFromPathname(pathname);
 
   if (pathLocale) {
@@ -36,6 +45,26 @@ export function proxy(request: NextRequest) {
   );
 
   return redirectToLocalizedPath(request, negotiatedLocale);
+}
+
+/**
+ * Placeholder gate for the admin route group — see src/lib/admin-auth.ts.
+ * Lets the login page itself through unconditionally (otherwise it would
+ * redirect to itself forever); everything else under /admin requires the
+ * admin session cookie.
+ */
+function guardAdminRoute(request: NextRequest, pathname: string) {
+  if (pathname === ADMIN_LOGIN_PATH) {
+    return NextResponse.next();
+  }
+
+  if (isAdminAuthorized(request.cookies.get(ADMIN_SESSION_COOKIE)?.value)) {
+    return NextResponse.next();
+  }
+
+  const loginUrl = request.nextUrl.clone();
+  loginUrl.pathname = ADMIN_LOGIN_PATH;
+  return NextResponse.redirect(loginUrl);
 }
 
 /**
