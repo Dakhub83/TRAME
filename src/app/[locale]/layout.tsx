@@ -1,29 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Space_Grotesk, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { cookies } from "next/headers";
 import "../globals.css";
 import { BookingProvider } from "@/context/booking-context";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
 import { isSupportedLocale, locales } from "@/lib/i18n";
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-});
-
-const ibmPlexSans = IBM_Plex_Sans({
-  variable: "--font-ibm-plex-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
+import { spaceGrotesk, ibmPlexSans, ibmPlexMono } from "@/lib/fonts";
+import { CLIENT_SESSION_COOKIE } from "@/lib/client-auth";
 
 export const metadata: Metadata = {
   title: "TRAME — Le réseau, réinventé",
@@ -42,6 +26,9 @@ export default async function RootLayout({
   const { locale } = await params;
   if (!isSupportedLocale(locale)) notFound();
 
+  const cookieStore = await cookies();
+  const loggedInPhone = cookieStore.get(CLIENT_SESSION_COOKIE)?.value;
+
   return (
     <html
       lang={locale}
@@ -49,7 +36,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-obsidian text-titanium antialiased">
         <BookingProvider>
-          <Navigation />
+          <Navigation loggedInPhone={loggedInPhone} />
           <main className="flex-1">{children}</main>
           <Footer locale={locale} />
         </BookingProvider>

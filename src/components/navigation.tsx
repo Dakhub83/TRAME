@@ -18,9 +18,14 @@ const navItems = [
   { href: "/contact", label: "CONTACT" },
 ];
 
-export function Navigation() {
+export function Navigation({ loggedInPhone }: { loggedInPhone?: string }) {
   const locale = useLocale();
   const pathname = usePathname();
+
+  const accountItem = loggedInPhone
+    ? { href: "/compte", label: "MON COMPTE" }
+    : { href: "/login", label: "CONNEXION" };
+  const items = [...navItems, accountItem];
 
   return (
     <header className="border-b border-graphite-line">
@@ -36,7 +41,7 @@ export function Navigation() {
         </Link>
         <div className="flex items-center gap-8">
           <nav className="hidden items-center gap-6 font-data text-xs text-titanium-dim md:flex">
-            {navItems.map((item) => {
+            {items.map((item) => {
               const href = buildLocalizedPath(item.href, locale);
               const active = pathname === href;
               return (
@@ -59,7 +64,7 @@ export function Navigation() {
         </div>
       </div>
       <nav className="flex items-center gap-5 overflow-x-auto border-t border-graphite-line px-6 py-2.5 font-data text-[11px] text-titanium-dim md:hidden">
-        {navItems.map((item) => {
+        {items.map((item) => {
           const href = buildLocalizedPath(item.href, locale);
           const active = pathname === href;
           return (
