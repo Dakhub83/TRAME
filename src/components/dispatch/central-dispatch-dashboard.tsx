@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { activeTrips, tripStatusLabel } from "@/lib/dispatch";
 import { ActiveTripCard } from "@/components/dispatch/active-trip-card";
-import { RouteMap } from "@/components/dispatch/route-map";
+import { LiveGpsMap } from "@/components/dispatch/live-gps-map";
 import { TripTimeline } from "@/components/dispatch/trip-timeline";
 import { useDispatchTelemetry } from "@/hooks/use-dispatch-telemetry";
 
@@ -128,7 +128,11 @@ export function CentralDispatchDashboard() {
                 </div>
 
                 <div className="mt-6">
-                  <RouteMap trip={displayedTrip} live={isLive} />
+                  <LiveGpsMap
+                    trip={displayedTrip}
+                    live={isLive}
+                    liveCoordinates={isLive ? frame?.coordinates ?? null : null}
+                  />
                 </div>
 
                 <TripTimeline stops={displayedTrip.stops} />

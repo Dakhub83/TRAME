@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { lookupPublicTrip, type PublicTrip } from "@/lib/tracking";
-import { RouteMap } from "@/components/dispatch/route-map";
+import { LiveGpsMap } from "@/components/dispatch/live-gps-map";
 
 export function TicketTracker() {
   const [code, setCode] = useState("");
@@ -103,7 +103,7 @@ export function TicketTracker() {
               </div>
 
               <div>
-                <RouteMap trip={trip} live />
+                <LiveGpsMap trip={trip} live />
               </div>
             </div>
           </div>

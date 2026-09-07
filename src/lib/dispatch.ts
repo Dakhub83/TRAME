@@ -5,6 +5,8 @@ export type ScheduledStop = {
   scheduledTime: string;
   estimatedTime: string;
   status: StopStatus;
+  lat: number;
+  lng: number;
 };
 
 export type TripStatus = "ON_TIME" | "DELAYED" | "BOARDING" | "COMPLETED";
@@ -32,11 +34,11 @@ export const activeTrips: ActiveTrip[] = [
     overallStatus: "ON_TIME",
     gpsProgress: 72,
     stops: [
-      { stopName: "Ouagadougou — Gare TRAME", scheduledTime: "06:30", estimatedTime: "06:30", status: "PARTI" },
-      { stopName: "Koudougou", scheduledTime: "08:05", estimatedTime: "08:05", status: "PARTI" },
-      { stopName: "Boromo", scheduledTime: "09:20", estimatedTime: "09:20", status: "PARTI" },
-      { stopName: "Houndé", scheduledTime: "10:15", estimatedTime: "10:17", status: "EN_APPROCHE" },
-      { stopName: "Bobo-Dioulasso — Terminus Sud", scheduledTime: "11:10", estimatedTime: "11:15", status: "EN_ATTENTE" },
+      { stopName: "Ouagadougou — Gare TRAME", scheduledTime: "06:30", estimatedTime: "06:30", status: "PARTI", lat: 12.3714, lng: -1.5197 },
+      { stopName: "Koudougou", scheduledTime: "08:05", estimatedTime: "08:05", status: "PARTI", lat: 12.253, lng: -2.3623 },
+      { stopName: "Boromo", scheduledTime: "09:20", estimatedTime: "09:20", status: "PARTI", lat: 11.7467, lng: -2.9298 },
+      { stopName: "Houndé", scheduledTime: "10:15", estimatedTime: "10:17", status: "EN_APPROCHE", lat: 11.4939, lng: -3.5172 },
+      { stopName: "Bobo-Dioulasso — Terminus Sud", scheduledTime: "11:10", estimatedTime: "11:15", status: "EN_ATTENTE", lat: 11.1772, lng: -4.2974 },
     ],
   },
   {
@@ -49,9 +51,9 @@ export const activeTrips: ActiveTrip[] = [
     overallStatus: "BOARDING",
     gpsProgress: 4,
     stops: [
-      { stopName: "Ouagadougou — Gare TRAME", scheduledTime: "07:00", estimatedTime: "07:06", status: "ARRIVÉ" },
-      { stopName: "Sabou", scheduledTime: "07:45", estimatedTime: "07:51", status: "EN_ATTENTE" },
-      { stopName: "Koudougou — Terminus", scheduledTime: "08:30", estimatedTime: "08:36", status: "EN_ATTENTE" },
+      { stopName: "Ouagadougou — Gare TRAME", scheduledTime: "07:00", estimatedTime: "07:06", status: "ARRIVÉ", lat: 12.3714, lng: -1.5197 },
+      { stopName: "Sabou", scheduledTime: "07:45", estimatedTime: "07:51", status: "EN_ATTENTE", lat: 12.05, lng: -2.0667 },
+      { stopName: "Koudougou — Terminus", scheduledTime: "08:30", estimatedTime: "08:36", status: "EN_ATTENTE", lat: 12.253, lng: -2.3623 },
     ],
   },
   {
@@ -64,9 +66,9 @@ export const activeTrips: ActiveTrip[] = [
     overallStatus: "DELAYED",
     gpsProgress: 45,
     stops: [
-      { stopName: "Ouagadougou — Gare TRAME", scheduledTime: "06:45", estimatedTime: "06:45", status: "PARTI" },
-      { stopName: "Yako", scheduledTime: "08:10", estimatedTime: "08:22", status: "EN_APPROCHE" },
-      { stopName: "Ouahigouya — Terminus Nord", scheduledTime: "09:20", estimatedTime: "09:32", status: "EN_ATTENTE" },
+      { stopName: "Ouagadougou — Gare TRAME", scheduledTime: "06:45", estimatedTime: "06:45", status: "PARTI", lat: 12.3714, lng: -1.5197 },
+      { stopName: "Yako", scheduledTime: "08:10", estimatedTime: "08:22", status: "EN_APPROCHE", lat: 12.9581, lng: -2.2633 },
+      { stopName: "Ouahigouya — Terminus Nord", scheduledTime: "09:20", estimatedTime: "09:32", status: "EN_ATTENTE", lat: 13.5828, lng: -2.4217 },
     ],
   },
   {
@@ -79,11 +81,11 @@ export const activeTrips: ActiveTrip[] = [
     overallStatus: "ON_TIME",
     gpsProgress: 48,
     stops: [
-      { stopName: "Bobo-Dioulasso — Gare Centrale", scheduledTime: "13:00", estimatedTime: "13:00", status: "PARTI" },
-      { stopName: "Houndé", scheduledTime: "13:55", estimatedTime: "13:55", status: "PARTI" },
-      { stopName: "Boromo", scheduledTime: "14:50", estimatedTime: "14:50", status: "EN_APPROCHE" },
-      { stopName: "Koudougou", scheduledTime: "16:05", estimatedTime: "16:05", status: "EN_ATTENTE" },
-      { stopName: "Ouagadougou — Gare TRAME", scheduledTime: "17:40", estimatedTime: "17:40", status: "EN_ATTENTE" },
+      { stopName: "Bobo-Dioulasso — Gare Centrale", scheduledTime: "13:00", estimatedTime: "13:00", status: "PARTI", lat: 11.1772, lng: -4.2974 },
+      { stopName: "Houndé", scheduledTime: "13:55", estimatedTime: "13:55", status: "PARTI", lat: 11.4939, lng: -3.5172 },
+      { stopName: "Boromo", scheduledTime: "14:50", estimatedTime: "14:50", status: "EN_APPROCHE", lat: 11.7467, lng: -2.9298 },
+      { stopName: "Koudougou", scheduledTime: "16:05", estimatedTime: "16:05", status: "EN_ATTENTE", lat: 12.253, lng: -2.3623 },
+      { stopName: "Ouagadougou — Gare TRAME", scheduledTime: "17:40", estimatedTime: "17:40", status: "EN_ATTENTE", lat: 12.3714, lng: -1.5197 },
     ],
   },
 ];
